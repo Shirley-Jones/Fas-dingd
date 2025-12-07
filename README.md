@@ -13,10 +13,12 @@
 
 ## 安装脚本
 通过安装启动器进行安装
+
 Github
 ```shell script
 wget --no-check-certificate -O fast.sh https://raw.githubusercontent.com/Shirley-Jones/Fas-dingd/master/fast.sh && chmod +x ./fast.sh && ./fast.sh
 ```
+
 Gitee
 ```shell script
 wget --no-check-certificate -O fast.sh https://gitee.com/JokerPan00/Fas-dingd/raw/master/fast.sh && chmod +x ./fast.sh && ./fast.sh
