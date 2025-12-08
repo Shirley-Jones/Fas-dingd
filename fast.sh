@@ -454,7 +454,7 @@ Make_APP()
 	elif [[ ${Linux_OS} ==  "Ubuntu" ]]; then
 		# 相同
 		apt update >/dev/null 2>&1
-		apt install jdk java -y >/dev/null 2>&1
+		apt install openjdk-17-jdk -y >/dev/null 2>&1
 	else
 		echo "程序逻辑错误，脚本已被终止..."
 		exit 1;
@@ -510,29 +510,8 @@ setup_tencent_yum() {
     if [ $? -eq 0 ]; then
         echo "腾讯云镜像源配置成功"
     else
-        echo "腾讯云镜像源下载失败，尝试备用方案..."
-        # 备用方案：手动创建repo文件
-        cat > /etc/yum.repos.d/CentOS-Base.repo << 'EOF'
-#腾讯云镜像源
-[base]
-name=CentOS-$releasever - Base - Tencent
-baseurl=https://mirrors.cloud.tencent.com/centos/$releasever/os/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-
-[updates]
-name=CentOS-$releasever - Updates - Tencent
-baseurl=https://mirrors.cloud.tencent.com/centos/$releasever/updates/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-
-[extras]
-name=CentOS-$releasever - Extras - Tencent
-baseurl=https://mirrors.cloud.tencent.com/centos/$releasever/extras/$basearch/
-gpgcheck=1
-gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
-EOF
-        echo "腾讯云镜像源配置完成"
+        echo "腾讯云镜像源下载失败，请检查网络连接"
+        exit 1
     fi
 }
 
