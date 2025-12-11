@@ -936,7 +936,6 @@ void Install_FAS(char* IP, char* IP_Country) {
 	printf("重启VPN vpn restart   \n");
 	printf("启动VPN vpn start    \n");
 	printf("停止VPN vpn stop   \n");
-	printf("开放端口 vpn port   \n");
 	printf("---------------------------------------------\n");
 	printf("说明: \n");
 	printf("部分大厂服务器(如阿里云腾讯云) 会报毒 webshell漏洞文件，请自行查看项目自述文件解决。\n");

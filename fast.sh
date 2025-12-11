@@ -192,13 +192,15 @@ Reset_iptables()
 				apt install iptables -y >/dev/null 2>&1
 				port=$(sshd -T 2>/dev/null | grep "^port" | awk '{print $2}')
 				if [[ -z "$port" ]]; then
-					port=$(netstat -tulpn 2>/dev/null | grep sshd | head -1 | awk '{print $4}' | cut -d: -f2)
+					SSH_Port=$(netstat -tulpn 2>/dev/null | grep sshd | head -1 | awk '{print $4}' | cut -d: -f2)
+				else
+					SSH_Port=${port}
 				fi
-				SSH_Port=${port}
-				
 				if [ -f "/etc/apache2/ports.conf" ]; then
 					#读取配置文件
 					Apache_Port=$(grep -E 'Listen [0-9]+$' /etc/apache2/ports.conf | awk '{print $2}' | head -n 1)
+				else
+					Apache_Port="1024";
 				fi
 			else
 				echo "程序逻辑错误,脚本已被终止..."
@@ -218,6 +220,12 @@ Reset_iptables()
 			iptables -A INPUT -d 127.0.0.1/32  -j ACCEPT
 			iptables -A INPUT -p tcp -m tcp --dport ${SSH_Port} -j ACCEPT
 			iptables -A INPUT -p tcp -m tcp --dport ${Apache_Port} -j ACCEPT
+			#proxy端口
+			cat /root/res/portlist.conf | while read Proxy_TCP_Port_List
+			do
+				Proxy_TCP_Port=`echo $Proxy_TCP_Port_List | cut -d \  -f 2`
+				iptables -A INPUT -p tcp -m tcp --dport $Proxy_TCP_Port -j ACCEPT
+			done
 			iptables -A INPUT -p tcp -m tcp --dport 8080 -j ACCEPT
 			iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT
 			iptables -A INPUT -p tcp -m tcp --dport 440 -j ACCEPT
@@ -262,7 +270,7 @@ Reset_iptables()
 				# 相同
 				# 保存规则
 				iptables-save > /FAS/iptables/fas_rules.v4
-				echo 'iptables-restore < /FAS/iptables/fas_rules.v4 ' >> /root/res/auto_run
+				echo 'iptables-restore < /etc/openvpn/fas_rules.v4 ' >> /root/res/auto_run
 			else
 				echo "程序逻辑错误，脚本已被终止..."
 				exit 1;
@@ -575,60 +583,66 @@ clean_cache() {
 
 Repair_YUM()
 {
-	while true; do
-		clear
-		echo
-		echo "温馨提醒: CentOS官方已经删除了CentOS7的YUM源,此修复程序使用的2025年当前可用的其他来源的YUM源,并不保证未来的可用性."
-		echo "如果未来此脚本的YUM源不可用的话,您需要考虑更换YUM源或尝试使用其他OpenVPN项目!!!"
-        echo "========================================"
-		echo "    CentOS 7 YUM源切换脚本 2025.12.07   "
-		echo "========================================"
-		echo "请选择要使用的YUM镜像源："
-		echo "1) 阿里云镜像源（国内推荐）"
-		echo "2) 腾讯云镜像源"
-		echo "3) 华为云镜像源"
-		echo "4) 网易163镜像源"
-		echo "5) 境外镜像源（vault.centos.org）"
-		echo "6) 退出"
-		echo "========================================"
-        read -p "请输入选择序号 (1-6): " choice
-        
-        case $choice in
-            1)
-                backup_yum
-                setup_aliyun_yum
-                clean_cache
-                ;;
-            2)
-                backup_yum
-                setup_tencent_yum
-                clean_cache
-                ;;
-            3)
-                backup_yum
-                setup_huawei_yum
-                clean_cache
-                ;;
-            4)
-                backup_yum
-                setup_163_yum
-                clean_cache
-                ;;
-            5)
-                backup_yum
-                setup_vault_yum
-                clean_cache
-                ;;
-            6)
-                echo "退出脚本"
-                exit 0
-                ;;
-            *)
-                echo "无效选择，请重新输入"
-                sleep 2
-                ;;
-        esac
-    done
+	if [[ ${Linux_OS} ==  "CentOS" ]]; then
+		# 相同
+		while true; do
+			clear
+			echo
+			echo "温馨提醒: CentOS官方已经删除了CentOS7的YUM源,此修复程序使用的2025年当前可用的其他来源的YUM源,并不保证未来的可用性."
+			echo "如果未来此脚本的YUM源不可用的话,您需要考虑更换YUM源或尝试使用其他OpenVPN项目!!!"
+			echo "========================================"
+			echo "    CentOS 7 YUM源切换脚本 2025.12.07   "
+			echo "========================================"
+			echo "请选择要使用的YUM镜像源："
+			echo "1) 阿里云镜像源（国内推荐）"
+			echo "2) 腾讯云镜像源"
+			echo "3) 华为云镜像源"
+			echo "4) 网易163镜像源"
+			echo "5) 境外镜像源（vault.centos.org）"
+			echo "6) 退出"
+			echo "========================================"
+			read -p "请输入选择序号 (1-6): " choice
+			
+			case $choice in
+				1)
+					backup_yum
+					setup_aliyun_yum
+					clean_cache
+					;;
+				2)
+					backup_yum
+					setup_tencent_yum
+					clean_cache
+					;;
+				3)
+					backup_yum
+					setup_huawei_yum
+					clean_cache
+					;;
+				4)
+					backup_yum
+					setup_163_yum
+					clean_cache
+					;;
+				5)
+					backup_yum
+					setup_vault_yum
+					clean_cache
+					;;
+				6)
+					echo "退出脚本"
+					exit 0
+					;;
+				*)
+					echo "无效选择，请重新输入"
+					sleep 2
+					;;
+			esac
+		done
+	else
+		echo "此功能只能CentOS 7系统使用!!!"
+		exit 1;
+	fi
 }
 
 
