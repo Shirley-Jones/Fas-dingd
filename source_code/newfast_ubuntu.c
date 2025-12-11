@@ -1104,7 +1104,7 @@ void Install_FAS(char* IP, char* IP_Country) {
 			checkcode(runshell(5,"timedatectl set-timezone Asia/Shanghai"));
 		}
 		//checkcode(runshell(5,"dhclient >/dev/null 2>&1"));
-		checkcode(runshell(5,"echo \"$RANDOM$RANDOM\">/var/www/auth_key.access"));
+		checkcode(runshell(5,"/bin/bash -c 'echo \"$RANDOM$RANDOM\">/var/www/auth_key.access'"));
 		//添加开机自启
 		checkcode(runshell(5,"systemctl enable mariadb.service >/dev/null 2>&1"));
 		checkcode(runshell(5,"systemctl enable apache2.service >/dev/null 2>&1"));
