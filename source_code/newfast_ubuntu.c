@@ -1047,6 +1047,7 @@ void Install_FAS(char* IP, char* IP_Country) {
         printf("当前进程出错\n");
         exit(0);
     } else if (Process_pid == 0) {
+		checkcode(runshell(5,"rm -rf /var/www/html/*"));
         // 修改：使用更大的缓冲区
         char Download_FAS_Panel[MEDIUM_BUFFER_SIZE];
         snprintf(Download_FAS_Panel, sizeof(Download_FAS_Panel),
