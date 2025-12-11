@@ -667,14 +667,14 @@ void Readme()
 
 
 void Install_FAS(char* IP, char* IP_Country) {
-	char MySQL_Host[20] = "localhost";
+	char MySQL_Host[50] = "localhost";
 	char MySQL_Port[20] = "3306";
-	char MySQL_User[20] = "root";
-	char MySQL_Pass[32];
-	char SSH_Port[5];
-	char Random_MySQL_Pass[32];
+	char MySQL_User[50] = "root";
+	char MySQL_Pass[100];
+	char SSH_Port[20];
+	char Random_MySQL_Pass[100];
 	char Download_Host_Select[20];
-	char Download_Host[200];
+	char Download_Host[300];
 	char Certificate_replacement_status[4];
 	char DNS_IP[100];
 	if (strcmp(IP_Country, "CN") == 0) {
@@ -693,8 +693,8 @@ void Install_FAS(char* IP, char* IP_Country) {
 	// 随机数据库密码
 	strcpy(Random_MySQL_Pass, cmd_system("echo `date +%s%N | md5sum | head -c 20` | tr -d '\n'"));
 	
-	//获取ssh端口号(centos有效)
-	strcpy(SSH_Port, cmd_system("echo `netstat -tulpn | grep sshd | awk '{print $4}' | cut -d: -f2` | tr -d '\n'"));
+	//获取ssh端口号(Ubuntu有效)
+	strcpy(SSH_Port, cmd_system("echo `sshd -T 2>/dev/null | grep \"^port\" | awk '{print $2}'` | tr -d '\n'"));
 	
 	// 数据库密码
 	while (1) {
@@ -710,6 +710,7 @@ void Install_FAS(char* IP, char* IP_Country) {
 			break;
 		}
 	}
+	sleep(1);
 	setbuf(stdout, NULL);
     system("clear");
 	printf("\n请选择下载节点");
@@ -1001,15 +1002,15 @@ void Install_FAS(char* IP, char* IP_Country) {
         checkcode(runshell(5,Edit_OpenVPN_Config_IP));
         
         //编译组件
-        checkcode(runshell(5,"gcc -o /FAS/bin/FasAUTH.bin /FAS/source_code/Shirley_FasAUTH.c -lmariadbclient -lcurl -lcrypto"));
+        checkcode(runshell(5,"gcc -o /FAS/bin/FasAUTH.bin /FAS/source_code/Shirley_FasAUTH.c -lmariadbclient -lcurl -lcrypto > /dev/null 2>&1"));
         checkcode(runshell(5,"chmod -R 0777 /FAS/bin/FasAUTH.bin"));
-        checkcode(runshell(5,"gcc -o /FAS/bin/openvpn.bin /FAS/source_code/openvpn.c"));
+        checkcode(runshell(5,"gcc -o /FAS/bin/openvpn.bin /FAS/source_code/openvpn.c > /dev/null 2>&1"));
         checkcode(runshell(5,"chmod -R 0777 /FAS/bin/openvpn.bin"));
-        checkcode(runshell(5,"gcc -o /FAS/bin/rate.bin /FAS/source_code/Rate.c"));
+        checkcode(runshell(5,"gcc -o /FAS/bin/rate.bin /FAS/source_code/Rate.c > /dev/null 2>&1"));
         checkcode(runshell(5,"chmod -R 0777 /FAS/bin/rate.bin"));
-        checkcode(runshell(5,"gcc -o /FAS/res/proxy.bin /FAS/source_code/Proxy.c"));
+        checkcode(runshell(5,"gcc -o /FAS/res/proxy.bin /FAS/source_code/Proxy.c > /dev/null 2>&1"));
         checkcode(runshell(5,"chmod -R 0777 /FAS/res/proxy.bin"));
-        checkcode(runshell(5,"gcc -o /FAS/res/fas-service /FAS/source_code/Socket.c -lcrypto"));
+        checkcode(runshell(5,"gcc -o /FAS/res/fas-service /FAS/source_code/Socket.c -lcrypto > /dev/null 2>&1"));
         checkcode(runshell(5,"chmod -R 0777 /FAS/res/fas-service"));
         
         //复制二进制文件

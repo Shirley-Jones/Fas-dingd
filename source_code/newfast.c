@@ -532,15 +532,15 @@ void Readme()
 
 
 void Install_FAS(char* IP, char* IP_Country) {
-	char MySQL_Host[20] = "localhost";
+	char MySQL_Host[50] = "localhost";
 	char MySQL_Port[20] = "3306";
-	char MySQL_User[20] = "root";
-	char MySQL_Pass[20];
+	char MySQL_User[50] = "root";
+	char MySQL_Pass[100];
 	char SSH_Port[20];
-	char Random_MySQL_Pass[20];
+	char Random_MySQL_Pass[100];
 	char Download_Host_Select[20];
-	char Download_Host[100];
-	char Certificate_replacement_status[3];
+	char Download_Host[300];
+	char Certificate_replacement_status[4];
 	char DNS_IP[100];
 	if (strcmp(IP_Country, "CN") == 0) {
 		strcpy(DNS_IP, "114.114.114.114");
@@ -575,6 +575,7 @@ void Install_FAS(char* IP, char* IP_Country) {
 			break;
 		}
 	}
+	sleep(1);
 	setbuf(stdout, NULL);
     system("clear");
 	printf("\n请选择下载节点");
