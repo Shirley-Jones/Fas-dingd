@@ -10,6 +10,7 @@
 ## 更新日志
 * 简化了CentOS7脚本的安装代码
 * 新增启动器
+* 适配了Ubuntu系统，需要Ubuntu20+ x64 系统才能安装
 
 ## 安装脚本
 通过安装启动器进行安装
@@ -33,9 +34,9 @@ wget --no-check-certificate -O fast.sh https://gitee.com/JokerPan00/Fas-dingd/ra
 
 > Ubuntu
 * 更新列表: apt update
-* 先安装支持库: apt install libcurl4-openssl-dev gcc gdb g++ openssl -y
+* 先安装支持库: apt install curl libcurl4-openssl-dev openssl gcc gdb -y
 * 编译 gcc -o 编译后的文件 源码文件 -lcurl
-* 举个栗子 gcc -o fast.bin newfast.c -lcurl
+* 举个栗子 gcc -o fast.bin newfast_ubuntu.c -lcurl
 ----
 
 ## 常用命令
