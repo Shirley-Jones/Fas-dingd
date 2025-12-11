@@ -41,8 +41,9 @@ wget --no-check-certificate -O fast.sh https://gitee.com/JokerPan00/Fas-dingd/ra
 
 ## 常用命令
 > 重启流控 vpn restart
+
 > 开放新端口和其他操作 请通过 “启动器(fast.sh)” 脚本进行操作
-> 
+
 
 ## 免责声明
 * 脚本写的很辣鸡，还请大佬多多包涵。
