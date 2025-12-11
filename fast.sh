@@ -719,6 +719,7 @@ System_Check()
 
 Main()
 {
+	rm -rf $0 >/dev/null 2>&1
 	System_Check
 	clear
 	while true; do
