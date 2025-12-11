@@ -674,7 +674,7 @@ void Install_FAS(char* IP, char* IP_Country) {
 	char SSH_Port[5];
 	char Random_MySQL_Pass[32];
 	char Download_Host_Select[20];
-	char Download_Host[100];
+	char Download_Host[200];
 	char Certificate_replacement_status[4];
 	char DNS_IP[100];
 	if (strcmp(IP_Country, "CN") == 0) {
@@ -726,11 +726,11 @@ void Install_FAS(char* IP, char* IP_Country) {
 	}else if (strcmp(Download_Host_Select,"2")==0){
 		//资源2地址
 		printf("你已选择 2.Gitee (China)\n");
-		strcpy(Download_Host,"#");
+		strcpy(Download_Host,"https://gitee.com/JokerPan00/Fas-dingd/raw/master/resource");
 	}else{
 		//默认资源地址
 		printf("输入无效，系统自动选择 1.GitHub (Global)\n");
-		strcpy(Download_Host,"https://gitee.com/JokerPan00/Fas-dingd/raw/master/resource");
+		strcpy(Download_Host,"https://raw.githubusercontent.com/Shirley-Jones/Fas-dingd/master/resource");
 	}
 	
     printf("\n所需的信息收集完成，即将安装...\n");
@@ -758,7 +758,7 @@ void Install_FAS(char* IP, char* IP_Country) {
 		// 检查是否需要加载APT
 		if (access("/root/zero_apt", 0)) {
 			//printf("正在加载APT请稍等...\n");
-			checkcode(runshell(5, "apt update"));
+			checkcode(runshell(5, "apt update >/dev/null 2>&1"));
 			checkcode(runshell(5, "echo 'Already installed' >> /root/zero_apt"));
 		}
 		
@@ -800,17 +800,16 @@ void Install_FAS(char* IP, char* IP_Country) {
 		checkcode(runshell(3, "software-properties-common"));
 		checkcode(runshell(5, "add-apt-repository ppa:ondrej/php -y"));
         // 再次更新
-		checkcode(runshell(5, "apt update"));
+		checkcode(runshell(5, "apt update >/dev/null 2>&1"));
 		checkcode(runshell(3, "apache2"));
 		checkcode(runshell(3, "php7.0 php7.0-cli php7.0-common php7.0-gd php7.0-ldap php7.0-mysql php7.0-odbc php7.0-xmlrpc php7.0-mbstring php7.0-gmp"));
 		// 修改 Apache 配置
 		checkcode(runshell(5, "sed -i 's/80/1024/g' /etc/apache2/sites-enabled/000-default.conf"));
 		checkcode(runshell(5, "sed -i 's/Listen 80/Listen 1024/g' /etc/apache2/ports.conf"));
 		checkcode(runshell(5, "sed -i 's/Options Indexes FollowSymLinks/Options FollowSymLinks/g' /etc/apache2/apache2.conf"));
-		checkcode(runshell(5, "a2enmod headers"));
+		checkcode(runshell(5, "a2enmod headers >/dev/null 2>&1"));
 		//checkcode(runshell(5, "sed -i '/<Directory \/>/a\\Header set Access-Control-Allow-Origin \"*\"' /etc/apache2/apache2.conf"));
 		checkcode(runshell(5, "systemctl restart apache2.service"));
-		checkcode(runshell(5, "systemctl enable apache2.service"));
 		exit(0);
     } else {
         Start_Progress_bar("正在安装PHP...", Process_pid);
@@ -846,7 +845,6 @@ void Install_FAS(char* IP, char* IP_Country) {
         
         checkcode(runshell(5, "echo '[mysqld]\nbind-address = 0.0.0.0' >> /etc/mysql/my.cnf"));
         checkcode(runshell(5, "systemctl restart mariadb.service"));
-        checkcode(runshell(5, "systemctl enable mariadb.service"));
 		exit(0);
     } else {
         Start_Progress_bar("正在安装MySQL...", Process_pid);

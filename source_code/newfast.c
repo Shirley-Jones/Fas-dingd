@@ -591,11 +591,11 @@ void Install_FAS(char* IP, char* IP_Country) {
 	}else if (strcmp(Download_Host_Select,"2")==0){
 		//资源2地址
 		printf("你已选择 2.Gitee (China)\n");
-		strcpy(Download_Host,"#");
+		strcpy(Download_Host,"https://gitee.com/JokerPan00/Fas-dingd/raw/master/resource");
 	}else{
 		//默认资源地址
 		printf("输入无效，系统自动选择 1.GitHub (Global)\n");
-		strcpy(Download_Host,"https://gitee.com/JokerPan00/Fas-dingd/raw/master/resource");
+		strcpy(Download_Host,"https://raw.githubusercontent.com/Shirley-Jones/Fas-dingd/master/resource");
 	}
 	
     printf("\n所需的信息收集完成，即将安装...\n");
