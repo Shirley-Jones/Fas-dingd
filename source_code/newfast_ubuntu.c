@@ -865,12 +865,12 @@ void Install_FAS(char* IP, char* IP_Country) {
         //下载 FAS Core - 修改：使用更大的缓冲区
         char Download_FAS_Core[MEDIUM_BUFFER_SIZE];
         snprintf(Download_FAS_Core, sizeof(Download_FAS_Core),
-                 "wget --no-check-certificate -O /FAS/core_ubuntu.zip %s/core_ubuntu.zip >/dev/null 2>&1", Download_Host);
+                 "wget --no-check-certificate -O /FAS/core.zip %s/core.zip >/dev/null 2>&1", Download_Host);
         checkcode(runshell(5,Download_FAS_Core));
         
-		checkcode(runshell(5,"unzip -o /FAS/core_ubuntu.zip -d /FAS >/dev/null 2>&1"));
+		checkcode(runshell(5,"unzip -o /FAS/core.zip -d /FAS >/dev/null 2>&1"));
         checkcode(runshell(5,"chmod -R 0777 /FAS/*"));
-        
+        checkcode(runshell(5,"rm -rf /FAS/core.zip"));
 		
 		//修改apache2服务名
 		checkcode(runshell(5,"sed -i 's/httpd.service/apache2.service/g' /FAS/bin/vpn"));
@@ -933,11 +933,9 @@ void Install_FAS(char* IP, char* IP_Country) {
 		checkcode(runshell(3,"iptables"));
         checkcode(runshell(5,"iptables -A INPUT -s 127.0.0.1/32 -j ACCEPT"));
         checkcode(runshell(5,"iptables -A INPUT -d 127.0.0.1/32 -j ACCEPT"));
-        
         char SSH_Port1[MEDIUM_BUFFER_SIZE];
         snprintf(SSH_Port1, sizeof(SSH_Port1),"iptables -A INPUT -p tcp -m tcp --dport %s -j ACCEPT",SSH_Port);
         checkcode(runshell(5,SSH_Port1));
-        
         checkcode(runshell(5,"iptables -A INPUT -p tcp -m tcp --dport 8080 -j ACCEPT"));
         checkcode(runshell(5,"iptables -A INPUT -p tcp -m tcp --dport 443 -j ACCEPT"));
         checkcode(runshell(5,"iptables -A INPUT -p tcp -m tcp --dport 440 -j ACCEPT"));
@@ -973,8 +971,8 @@ void Install_FAS(char* IP, char* IP_Country) {
         checkcode(runshell(5,"iptables -t nat -A POSTROUTING -s 10.11.0.0/24 -o eth0 -j MASQUERADE"));
         checkcode(runshell(5,"echo '127.0.0.1 localhost' > /etc/hosts"));
         checkcode(runshell(5,"iptables-save > /etc/openvpn/fas_rules.v4"));
+		checkcode(runshell(5,"echo 'iptables-restore < /etc/openvpn/fas_rules.v4' >> /FAS/res/auto_run"));
 		
-        
         //编辑监控文件 - 修改：使用更大的缓冲区
         char Edit_OpenVPN_Config_Host[MEDIUM_BUFFER_SIZE];
         snprintf(Edit_OpenVPN_Config_Host, sizeof(Edit_OpenVPN_Config_Host),
@@ -1001,6 +999,13 @@ void Install_FAS(char* IP, char* IP_Country) {
                  "sed -i \"s/服务器IP/\"%s\"/g\" /etc/openvpn/auth_config.conf", IP);
         checkcode(runshell(5,Edit_OpenVPN_Config_IP));
         
+		//删除CentOS7专用组件
+		checkcode(runshell(5,"rm -rf /FAS/bin/FasAUTH.bin"));
+		checkcode(runshell(5,"rm -rf /FAS/bin/openvpn.bin"));
+		checkcode(runshell(5,"rm -rf /FAS/bin/rate.bin"));
+		checkcode(runshell(5,"rm -rf /FAS/res/proxy.bin"));
+		checkcode(runshell(5,"rm -rf /FAS/res/fas-service"));
+		
         //编译组件
         checkcode(runshell(5,"gcc -o /FAS/bin/FasAUTH.bin /FAS/source_code/Shirley_FasAUTH.c -lmariadbclient -lcurl -lcrypto > /dev/null 2>&1"));
         checkcode(runshell(5,"chmod -R 0777 /FAS/bin/FasAUTH.bin"));
@@ -1026,7 +1031,7 @@ void Install_FAS(char* IP, char* IP_Country) {
         if (access("/etc/rate.d",0)){
 			create_directory("/etc/rate.d", 0777);
         }
-        
+		
         //创建FAS服务开机自启
         checkcode(runshell(5,"cp /FAS/res/fas.service /lib/systemd/system/fas.service"));
         checkcode(runshell(5,"chmod -R 0777 /lib/systemd/system/fas.service"));
