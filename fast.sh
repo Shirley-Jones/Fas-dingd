@@ -468,24 +468,27 @@ Make_APP()
 		exit 1;
 	fi
 	
+	echo
+	echo "正在制作APP..."
+	mkdir -p /FAS/app
 	wget --no-check-certificate -O /FAS/app/app.zip ${Download_Host}/app.zip >/dev/null 2>&1
 	wget --no-check-certificate -O /FAS/app/apktool.zip ${Download_Host}/apktool.zip >/dev/null 2>&1
 	unzip -o /FAS/app/app.zip -d /FAS/app/ >/dev/null 2>&1
 	unzip -o /FAS/app/apktool.zip -d /FAS/app/ >/dev/null 2>&1
-	java -jar /FAS/app/apktool.jar d /FAS/app/old_app.apk >/dev/null 2>&1
-	java -jar /FAS/app/apktool.jar d /FAS/app/new_app.apk >/dev/null 2>&1
+	java -jar /FAS/app/apktool.jar d /FAS/app/old_app.apk -o /FAS/app/old_app >/dev/null 2>&1
+	java -jar /FAS/app/apktool.jar d /FAS/app/new_app.apk -o /FAS/app/new_app >/dev/null 2>&1
 	sed -i 's/demo.dingd.cn:80/'${Server_IP}'/g' `grep demo.dingd.cn:80 -rl /FAS/app/old_app/smali/net/openvpn/openvpn/` 
 	sed -i 's/叮咚流量卫士/'${APP_Name}'/g' "/FAS/app/old_app/res/values/strings.xml"
 	sed -i 's/demo.dingd.cn:80/'${Server_IP}'/g' "/FAS/app/new_app/res/values/strings.xml"
 	sed -i 's/叮咚流量卫士/'${APP_Name}'/g' "/FAS/app/new_app/res/values/strings.xml"
-	java -jar /FAS/app/apktool.jar b /FAS/app/old_app >/dev/null 2>&1
-	java -jar /FAS/app/apktool.jar b /FAS/app/new_app >/dev/null 2>&1
-	java -jar /FAS/app/signapk.jar testkey.x509.pem testkey.pk8 /FAS/app/old_app/dist/old_app.apk /root/old_app_sign.apk >/dev/null 2>&1
-	java -jar /FAS/app/signapk.jar testkey.x509.pem testkey.pk8 /FAS/app/new_app/dist/new_app.apk /root/new_app_sign.apk >/dev/null 2>&1
+	java -jar /FAS/app/apktool.jar b /FAS/app/old_app -o /FAS/app/make_old_app.apk >/dev/null 2>&1
+	java -jar /FAS/app/apktool.jar b /FAS/app/new_app -o /FAS/app/make_new_app.apk >/dev/null 2>&1
+	java -jar /FAS/app/signapk.jar /FAS/app/testkey.x509.pem /FAS/app/testkey.pk8 /FAS/app/make_old_app.apk /root/make_old_app_sign.apk >/dev/null 2>&1
+	java -jar /FAS/app/signapk.jar /FAS/app/testkey.x509.pem /FAS/app/testkey.pk8 /FAS/app/make_new_app.apk /root/make_new_app_sign.apk >/dev/null 2>&1
 	rm -rf /FAS/app
 	echo "生成的APP在 /root 文件夹中,请您使用Winscp等sftp协议的工具登录服务器获取APP!!!"
-	echo "Android 4+ 请使用 /root/old_app_sign.apk"
-	echo "Android 7+ 请使用 /root/new_app_sign.apk"
+	echo "Android 4+ 请使用 /root/make_old_app_sign.apk"
+	echo "Android 7+ 请使用 /root/make_new_app_sign.apk"
 	echo "可能不兼容Android 12+以上,请自行测试..."
 	echo "操作已完成..."
 	exit 0;
